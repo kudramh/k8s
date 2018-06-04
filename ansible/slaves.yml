@@ -1,0 +1,21 @@
+---
+- name: Kubernetes Slaves Register
+  hosts: slaves
+  become_user: vagrant
+  strategy: free
+  vars_prompt:
+   - name: "k8s_token"
+     prompt: "k8s token?"
+   - name: "CA_token"
+     prompt: "CA token?"     
+  tasks:
+   - name: Join Master
+     shell: 'sudo kubeadm join {{hostvars['k8s-master']['ansible_ssh_host']}}:6443 --token {{k8s_token}} --discovery-token-ca-cert-hash {{CA_token}}'
+
+- name: Kubernetes Master Nodes
+  hosts: master
+  become: true
+  strategy: free
+  tasks:
+   - name: get nodes
+     shell: 'kubctl get nodes'

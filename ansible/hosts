@@ -1,0 +1,5 @@
+[master]
+k8s-master ansible_ssh_host=199.152.78.17 ansible_user=vagrant ansible_ssh_pass=vagrant
+[slaves]
+k8s-slave1 ansible_ssh_host=199.152.78.18 ansible_user=vagrant ansible_ssh_pass=vagrant
+k8s-slave2 ansible_ssh_host=199.152.78.19 ansible_user=vagrant ansible_ssh_pass=vagrant

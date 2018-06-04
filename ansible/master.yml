@@ -1,0 +1,25 @@
+---
+- name: All-nodes Kubernetes setup and installation
+  hosts: master
+  become: true
+  strategy: free
+  tasks:
+   - name: Reset K8s
+     shell: 'kubeadm reset'         
+   - name: Initialize K8s master
+     shell: 'kubeadm init --apiserver-advertise-address {{ansible_ssh_host}}'
+   - name: Create Kube dir
+     shell: 'mkdir -p $HOME/.kube'
+     become_user: vagrant
+   - name: Copy admin to Kube dir
+     shell: 'sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config'
+     become_user: vagrant
+   - name: Chown config
+     shell: 'sudo chown $(id -u):$(id -g) $HOME/.kube/config'
+     become_user: vagrant
+   - name: Network config
+     shell: 'sudo sysctl net.bridge.bridge-nf-call-iptables=1'       
+   - name: Weaver Net
+     shell: 'kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d "\n")"'
+   - name: K8s get all pods
+     shell: 'kubectl get pods --all-namespaces'

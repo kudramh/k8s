@@ -1,0 +1,35 @@
+---  
+- hosts: all
+  become: true  
+  vars_files:  
+    - vars.yml  
+  strategy: free  
+  
+  tasks:
+   - name: Set Hostname
+     shell: 'sudo hostnamectl set-hostname {{inventory_hostname}}'    
+   - name: Preliminary installation     
+     apt:  name=apt-transport-https force=yes 
+   - name: Add the Google signing key  
+     shell: "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add"    
+   - name: Add the k8s APT repo
+     apt_repository: repo='deb http://apt.kubernetes.io/ kubernetes-xenial main' state=present      
+   - name: update apt cache directly
+     shell: 'apt-get clean && apt-get update && apt-get upgrade' 
+   - name: Install packages
+     apt: name={{ item }} state=installed force=yes 
+     with_items: "{{ PACKAGES }}"
+   - name: Turn off swap
+     shell: 'swapoff -a'       
+   - name: Docker Systemd
+     shell: 'systemctl enable docker'    
+   # - name: Apt crictl      
+   #   shell: 'apt-get install kubernetes-cni'     
+   # - name: Install crictl
+   #   shell: 'go get github.com/kubernetes-incubator/cri-tools/cmd/crictl'
+   #   become_user: vagrant
+   # - name: Create symlink in /usr/local/bin for crictl
+   #   file:
+   #     src: /home/vagrant/go/bin/crictl
+   #     dest: /usr/local/bin/crictl
+   #     state: link  

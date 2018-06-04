@@ -1,0 +1,8 @@
+---
+PACKAGES:
+  - vim
+  - htop
+  - tmux
+  - golang-go
+  - docker.io
+  - kubeadm
